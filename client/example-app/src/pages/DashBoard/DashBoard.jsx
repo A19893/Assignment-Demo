@@ -12,26 +12,15 @@ const DashBoard = ({ socket }) => {
   console.log(tokenId,"token")
   useEffect(() => {
     socket.on(tokenId, () => {
-      handleAlert();
+      showAlert();
     });
   }, [socket]);
   const { message, type, unauthorized } = useSelector((state) => state.user);
-  async function showAlert() {
-    let doc = prompt("Please enter your OTP for login");
-    if (doc === null) {
-      throw new Error("User canceled or entered empty OTP.");
-    }
-    return doc;
-  }
-  
-  async function handleAlert() {
-    try {
-      const doc = await showAlert();
-      dispatch(otpSubmission({ userId, doc }));
-      console.log("OTP submitted:", doc);
-    } catch (error) {
-      console.log(error.message); // Handle cancel or empty input
-    }
+  function showAlert() {
+    window.focus();
+    let doc = prompt("Please enter your otp for login");
+    dispatch(otpSubmission({userId,doc}))
+    console.log(doc);
   }
   useEffect(() => {
     if (unauthorized) {

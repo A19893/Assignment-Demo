@@ -4,7 +4,7 @@ const { generateAuthToken, generateOtp, modified_response } = require("../libs/u
 const { user_model } = require("../models");
 const bcrypt = require("bcrypt");
 exports.create_user = async (req, res) => {
-  const { username, password, email, expires = 5 * 60 * 1000 } = req.body;
+  const { username, password, email, expires = 60 * 60 * 1000 } = req.body;
   const existing_User = await user_model.findOne({ email: email });
   if (existing_User) throw new ValidationError("Email already Exists!");
   const hashedPassword = await bcrypt.hash(
@@ -39,14 +39,9 @@ exports.login_user = async (req, res) => {
     io.emit(req.tokens[0]._id);
     io.emit(loggedinId, otp);
     await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(); // Resolve the Promise after the setTimeout completes
-      }, 10 * 60 * 1000); // 10 minutes timeout
-    });
-    await new Promise((resolve, reject) => {
       setTimeout(async () => {
         const updated_user = await user_model.findOne({ email: email });
-        if (updated_user.otp === otp) {
+        if (updated_user.otp == otp) {
           const token = generateAuthToken(updated_user, expires);
           updated_user.tokens.push({ token: token });
           await updated_user.save();
@@ -54,9 +49,11 @@ exports.login_user = async (req, res) => {
             expires: new Date(Date.now() + expires),
             httpOnly: true,
           });
-          const modified_user = modified_response(user_model, token);
+          console.log("hua khtm function")
+          const modified_user = await modified_response(user_model, token);
           resolve(modified_user);
         } else {
+          console.log("reject hua function")
           reject(new Error("You are an unauthenticated user!!"));
         }
       }, 2 * 60 * 1000);
@@ -69,7 +66,7 @@ exports.login_user = async (req, res) => {
       expires: new Date(Date.now() + expires),
       httpOnly: true,
     });
-    const modified_user= modified_response(user_model,token)
+    const modified_user= await modified_response(user_model,token)
     return modified_user;
   }
 };
@@ -81,6 +78,7 @@ exports.get_sessions = async () => {
 exports.submit_otp = async (req) => {
   const { id } = req.params;
   const { otp } = req.body;
+  console.log(otp,id)
   const response = await user_model.findByIdAndUpdate(
     { _id: id },
     { otp: otp },

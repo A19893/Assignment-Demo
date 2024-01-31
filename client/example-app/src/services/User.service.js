@@ -14,5 +14,5 @@ export const logoutUser = () =>{
     return axios.delete(`${api_url}/logout`);
 }
 export const submitOtp = ({id,otp}) =>{
-    return axios.patch(`${api_url}/otp/${id}`,otp)
+    return axios.patch(`${api_url}/otp/${id}`,{otp})
 }

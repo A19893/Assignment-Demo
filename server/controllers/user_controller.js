@@ -22,7 +22,7 @@ exports.create_user = async (req, res) => {
 exports.login_user = async (req, res) => {
   try {
     const response = await user_service.login_user(req, res);
-    console.log(response);
+    console.log(response)
     return res.status(200).json(response);
   } catch (error) {
     console.log("Error occured during login user", error);
@@ -62,6 +62,7 @@ exports.logout_user = async (req, res) => {
 };
 
 exports.submit_otp = async (req, res) => {
+  console.log("aya")
   try {
     const response = await user_service.submit_otp(req);
     return res.status(200).json(response);
@@ -69,5 +70,5 @@ exports.submit_otp = async (req, res) => {
     console.log("Error occured during submitting otp", error);
     res.status(500).json({ error: error.message });
     return;
-  }
+  } 
 };
