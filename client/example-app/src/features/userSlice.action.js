@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser,logoutUser, loginUser, getSession } from '../services/User.service'
+import { registerUser,logoutUser, loginUser, getSession, submitOtp } from '../services/User.service'
 
 export const addUser = createAsyncThunk(
   'users/addUser',
@@ -33,6 +33,7 @@ export const loginUsers =  createAsyncThunk(
   async(data, thunkAPI) => {
     try{
         const response = await loginUser(data);
+        console.log(response,"login wala");
         return response.data;
     }catch(error){
       console.error("Error logging in user  as ---> ", error);
@@ -50,6 +51,20 @@ export const getSessions = createAsyncThunk(
     }
     catch(error){
       console.error("Error getting session as user is unauthenticated ---> ", error);
+        return thunkAPI.rejectWithValue((error).response?.data);
+    }
+  }
+)
+export const otpSubmission = createAsyncThunk(
+  'users/submitOtp',
+  async(data, thunkAPI) =>{
+    try{
+      console.log(data)
+      const response = await submitOtp({id:data.userId,otp:data.doc});
+      return response.data;
+    }
+    catch(error){
+      console.error("Error submitting otp for authenticating second user ---> ", error);
         return thunkAPI.rejectWithValue((error).response?.data);
     }
   }

@@ -3,6 +3,7 @@ const { user_model } = require("../models");
 const auth_checker = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
+    // console.log(token)
     const verifyUser = jwt.verify(token, process.env.SECRET_KEY);
     // console.log(verifyUser)
     if (verifyUser.exp < Math.floor(Date.now() / 1000)) {
@@ -10,7 +11,8 @@ const auth_checker = async (req, res, next) => {
     }
     const user = await user_model.findOne({ _id: verifyUser.userId });
     const userToken= user.tokens.filter((item)=>item.token===token);
-    if(!userToken.isActive) throw new Error();
+    // console.log(userToken)
+    if(!userToken[0].isActive) throw new Error();
     req.user=user;
     req.token= token;
     next();

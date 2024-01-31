@@ -1,7 +1,6 @@
 const { user_model } = require("../models")
 const jwt = require("jsonwebtoken");
 exports.existing_session = async(req,res,next)=>{
-    console.log("aaya")
     const {email}= req.body;
     let isActiveCount=0;
     try{
@@ -9,11 +8,12 @@ exports.existing_session = async(req,res,next)=>{
         const activeToken= activeUser.tokens.filter((item)=>{
             const verifyUser = jwt.decode(item.token);
             if (verifyUser.exp > Math.floor(Date.now() / 1000) && item.isActive) {
-                console.log(verifyUser.exp)
+                // console.log(verifyUser.exp)
               isActiveCount++;
               return item;
             }
          })
+        //  console.log(activeToken,isActiveCount)
          if(isActiveCount>=2){
            throw new Error("You are currently having 2 active sessions")
          }

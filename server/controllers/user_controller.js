@@ -1,4 +1,7 @@
-const { ValidationError, ValidationLogicConflictError } = require("../libs/errors");
+const {
+  ValidationError,
+  ValidationLogicConflictError,
+} = require("../libs/errors");
 const { user_service } = require("../services");
 
 exports.create_user = async (req, res) => {
@@ -19,6 +22,7 @@ exports.create_user = async (req, res) => {
 exports.login_user = async (req, res) => {
   try {
     const response = await user_service.login_user(req, res);
+    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.log("Error occured during login user", error);
@@ -32,18 +36,18 @@ exports.login_user = async (req, res) => {
 };
 
 exports.get_sessions = async (req, res) => {
-    try {
-      const response = await user_service.get_sessions(req, res);
-      return res.status(200).json(response);
-    } catch (error) {
-      console.log("Error occured during fetching sessions", error);
-      if (error instanceof ValidationError) {
-        res.status(400).json({ error: error.message });
-      } else {
-        res.status(500).json({ error: error.message });
-        return;
-      }
+  try {
+    const response = await user_service.get_sessions(req, res);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log("Error occured during fetching sessions", error);
+    if (error instanceof ValidationError) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: error.message });
+      return;
     }
+  }
 };
 
 exports.logout_user = async (req, res) => {
@@ -52,7 +56,18 @@ exports.logout_user = async (req, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.log("Error occured during logging out user", error);
-      res.status(500).json({ error: error.message });
-      return;
+    res.status(500).json({ error: error.message });
+    return;
+  }
+};
+
+exports.submit_otp = async (req, res) => {
+  try {
+    const response = await user_service.submit_otp(req);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log("Error occured during submitting otp", error);
+    res.status(500).json({ error: error.message });
+    return;
   }
 };

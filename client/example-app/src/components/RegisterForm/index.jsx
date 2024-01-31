@@ -56,7 +56,7 @@ const RegisterForm = () => {
         </button>
         <p
           className="p-2 m-2 text-center cursor-pointer text-red-600"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/')}
         >
         Already a Registered User?
         </p>

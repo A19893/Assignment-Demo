@@ -17,7 +17,7 @@ const LoginForm = () => {
     );
     message && setErrorMessage(message);
     if (message) return;
-    dispatch(loginUsers({email:email.current.value,password:password.current.value}))
+    dispatch(loginUsers({email:email.current.value,password:password.current.value,loggedinId:123}))
     navigate("/")
   };
   return (
@@ -50,7 +50,7 @@ const LoginForm = () => {
         </button>
         <p
           className="p-2 m-2 text-center cursor-pointer text-red-600"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/signup')}
         >
         Already a Registered User?
         </p>

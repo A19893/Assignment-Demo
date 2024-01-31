@@ -15,6 +15,9 @@ const User = new mongoose.Schema({
         unique: true,
         required:true,
     },
+    otp:{
+        type: Number,
+    },
     password:{
         type: String,
         required:true,

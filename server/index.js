@@ -11,7 +11,6 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const ioManager = require("./config/ioManager");
 const http = require("http").Server(app);
-
 ioManager.init(http);
 app.use(express.json({ limit: "50mb", extended: true }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -24,7 +23,7 @@ app.use(
   })
 );
 
-app.listen(global.port, () => {
+http.listen(global.port, () => {
   console.clear();
   console.log(`Server is listening on port ${global.port}`);
 });

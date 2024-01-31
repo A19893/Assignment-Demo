@@ -11,7 +11,7 @@ const SessionsList = () => {
       dispatch(getSessions());
       if (unauthorized) {  
         console.log("aaya")
-        navigate("/login")
+        // navigate("/")
       }
     },[unauthorized])
   return (

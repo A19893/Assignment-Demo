@@ -21,3 +21,31 @@ exports.generateOtp= function(){
     }
     return OTP;
 }
+
+
+exports.modified_response= async(model,token)=>{
+    const modifed_user= await model.aggregate([
+        {
+          $match: {
+            "tokens.token": token
+          }
+        },
+        {
+          $project: {
+            username:1,
+            email:1,
+            password:1,
+            uuid:1,
+            tokens: {
+              $filter: {
+                input: "$tokens",
+                as: "token",
+                cond: { $eq: ["$$token.token",token] }
+              }
+            }
+          }
+        }
+      ])
+
+      return modifed_user[0]
+}

@@ -10,10 +10,10 @@ const make_connection = async () => {
     return true;
   } 
   catch (err) { 
-    console.log("Connection Error", err.message);
+    console.log("Connection Error", err.message); 
     mongoose.connection.close();
     
-    process.exit(0)
+    process.exit(0) 
   }
 };
 make_connection();
