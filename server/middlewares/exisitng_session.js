@@ -8,7 +8,7 @@ exports.existing_session = async(req,res,next)=>{
         const activeToken= activeUser.tokens.filter((item)=>{
             const verifyUser = jwt.decode(item.token);
             if (verifyUser.exp > Math.floor(Date.now() / 1000) && item.isActive) {
-                // console.log(verifyUser.exp)
+                console.log(verifyUser.exp)
               isActiveCount++;
               return item;
             }
@@ -18,6 +18,7 @@ exports.existing_session = async(req,res,next)=>{
            throw new Error("You are currently having 2 active sessions")
          }
          else{
+          console.log(activeToken)
            req.tokens= activeToken;
            next();
          }

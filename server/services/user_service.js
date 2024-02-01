@@ -38,26 +38,31 @@ exports.login_user = async (req, res) => {
     const otp = generateOtp();
     io.emit(req.tokens[0]._id);
     io.emit(loggedinId, otp);
-    await new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        const updated_user = await user_model.findOne({ email: email });
-        if (updated_user.otp == otp) {
-          const token = generateAuthToken(updated_user, expires);
-          updated_user.tokens.push({ token: token });
-          await updated_user.save();
-          res.cookie("jwt", token, {
-            expires: new Date(Date.now() + expires),
-            httpOnly: true,
-          });
-          console.log("hua khtm function")
-          const modified_user = await modified_response(user_model, token);
-          resolve(modified_user);
-        } else {
-          console.log("reject hua function")
-          reject(new Error("You are an unauthenticated user!!"));
-        }
-      }, 2 * 60 * 1000);
-    });
+    const response = await waitUntilTimeoutCompletes();
+    return response;
+    async function waitUntilTimeoutCompletes() {
+      const response= await new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            const updated_user = await user_model.findOne({ email: email });
+            if (updated_user.otp == otp) {
+              const token = generateAuthToken(updated_user, expires);
+              updated_user.tokens.push({ token: token });
+              await updated_user.save();
+              res.cookie("jwt", token, {
+                expires: new Date(Date.now() + expires),
+                httpOnly: true,
+              });
+              console.log("Function execution completed");
+              const modified_user = await modified_response(user_model, token);
+              resolve(modified_user);
+            } else {
+              console.log("Function execution rejected");
+              reject(new Error("You are an unauthenticated user!!"));
+            }
+        }, 2 * 60 * 1000);
+      });
+      return response;
+    }
   } else {
     const token = generateAuthToken(exisitng_user, expires);
     exisitng_user.tokens.push({ token: token });
