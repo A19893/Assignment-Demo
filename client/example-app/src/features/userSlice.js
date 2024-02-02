@@ -30,6 +30,7 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(addUser.fulfilled, (state, action) => {
+        state.isLoading= false;
         state.loggedInState= true;
         state.unauthorized= false;
         state.users= action.payload;
@@ -38,20 +39,26 @@ const userSlice = createSlice({
       })
       .addCase(addUser.rejected, (state, action) => {
         console.log(action.payload);
+        state.isLoading= false;
+        state.message = action.payload.error
+        state.type= "Error"
       })
       .addCase(loginUsers.pending, (state, action) => {
         state.isLoading = true;
       })
       .addCase(loginUsers.fulfilled, (state, action) => {
         state.isLoading=false;
+        state.loggedInState= true;
         state.users= action.payload;
         state.unauthorized= false;
-        state.loggedInState= true;
         state.message = "User Logged In  Successfully"
         state.type= "Success"
       })
       .addCase(loginUsers.rejected, (state, action) => {
         console.log(action.payload);
+        state.isLoading= false;
+        state.message = action.payload.error
+        state.type= "Error"
       })
       .addCase(logoutUsers.pending, (state, action) => {
         state.isLoading = true;
@@ -65,6 +72,8 @@ const userSlice = createSlice({
       })
       .addCase(logoutUsers.rejected, (state, action) => {
         console.log(action.payload);
+        state.message = action.payload.error
+        state.type= "Error"
       })
       .addCase(getSessions.pending, (state,action)=>{
         state.isLoading = true;

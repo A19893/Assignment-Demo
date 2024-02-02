@@ -13,12 +13,14 @@ const Login = ({socket}) => {
       showAlert(otp);
     })
   },[socket])
+  
   useEffect(()=>{
     if (message !== "") {  
       showSnackbar(message, type);
       setTimeout(() => {
         dispatch(deleteMessage());
       }, 1000);
+      return;
     }
   },[message])
 

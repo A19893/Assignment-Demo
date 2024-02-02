@@ -8,6 +8,7 @@ export const loginUser = (data) => {
     return axios.post(`${api_url}/login`,data)
 }
 export const getSession = () =>{
+    
     return axios.get(`${api_url}/sessions`)
 }
 export const logoutUser = () =>{

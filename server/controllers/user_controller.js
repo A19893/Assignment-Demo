@@ -26,7 +26,7 @@ exports.login_user = async (req, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.log("Error occured during login user", error);
-    if (error instanceof ValidationLogicConflictError) {
+    if (error instanceof ValidationLogicConflictError) { 
       res.status(400).json({ error: error.message });
     } else {
       res.status(500).json({ error: error.message });

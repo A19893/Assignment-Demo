@@ -1,19 +1,17 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { getSessions, logoutUsers } from '../../features/userSlice.action';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const SessionsList = () => {
     const dispatch = useDispatch();
-    const navigate= useNavigate();
-    const {unauthorized}= useSelector((state)=>state.user)
+    // const {unauthorized}= useSelector((state)=>state.user)
     useEffect(()=>{
       dispatch(getSessions());
-      if (unauthorized) {  
-        console.log("aaya")
-        // navigate("/")
-      }
-    },[unauthorized])
+      // if (unauthorized) {  
+      //   console.log("aaya")
+      // }
+    },[])
   return (
     <div>
         SessionList
