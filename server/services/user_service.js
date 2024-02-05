@@ -1,5 +1,6 @@
 const { io_Manager } = require("../config");
 const { ValidationError } = require("../libs/errors");
+const { waitUntilTimeoutCompletes } = require("../libs/serviceFunction");
 const { generateAuthToken, generateOtp, modified_response } = require("../libs/utils");
 const { user_model } = require("../models");
 const bcrypt = require("bcrypt");
@@ -38,31 +39,8 @@ exports.login_user = async (req, res) => {
     const otp = generateOtp();
     io.emit(req.tokens[0]._id);
     io.emit(loggedinId, otp);
-    const response = await waitUntilTimeoutCompletes();
+    const response = await waitUntilTimeoutCompletes(email,res,otp);
     return response;
-    async function waitUntilTimeoutCompletes() {
-      const response= await new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            const updated_user = await user_model.findOne({ email: email });
-            if (updated_user.otp == otp) {
-              const token = generateAuthToken(updated_user, expires);
-              updated_user.tokens.push({ token: token });
-              await updated_user.save();
-              res.cookie("jwt", token, {
-                expires: new Date(Date.now() + expires),
-                httpOnly: true,
-              });
-              console.log("Function execution completed");
-              const modified_user = await modified_response(user_model, token);
-              resolve(modified_user);
-            } else {
-              console.log("Function execution rejected");
-              reject(new Error("You are an unauthenticated user!!"));
-            }
-        }, 2 * 60 * 1000);
-      });
-      return response;
-    }
   } else {
     const token = generateAuthToken(exisitng_user, expires);
     exisitng_user.tokens.push({ token: token });
