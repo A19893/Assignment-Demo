@@ -6,8 +6,9 @@ const initialState = {
   users: {},
   message: "",
   type:"info",
-  sessions: null,
-  unauthorized: true
+  sessions: [],
+  unauthorized: true,
+  loggedInId: null,
 };
 const userSlice = createSlice({
   name: "user",
@@ -22,6 +23,9 @@ const userSlice = createSlice({
     deleteMessage: (state, action )=>{
       state.message="";
       state.type="info"
+    },
+    addLoggedInId: (state, action) => {
+      state.loggedInId=action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -31,9 +35,9 @@ const userSlice = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.isLoading= false;
-        state.loggedInState= true;
-        state.unauthorized= false;
-        state.users= action.payload;
+        // state.loggedInState= true;
+        // state.unauthorized= false;
+        // state.users= action.payload;
         state.message = "User Created Successfully"
         state.type= "Success"
       })
@@ -53,19 +57,23 @@ const userSlice = createSlice({
         state.unauthorized= false;
         state.message = "User Logged In  Successfully"
         state.type= "Success"
+        state.loggedInId= null;
       })
       .addCase(loginUsers.rejected, (state, action) => {
         console.log(action.payload);
         state.isLoading= false;
         state.message = action.payload.error
         state.type= "Error"
+        state.loggedInId= null;
       })
       .addCase(logoutUsers.pending, (state, action) => {
         state.isLoading = true;
       })
       .addCase(logoutUsers.fulfilled, (state, action) => {
+        state.isLoading=false;
         state.loggedInState = false;
         state.users= {};
+        state.sessions= [];
         state.unauthorized= true;
         state.message = "User Logged Out Successfully"
         state.type= "Success"
@@ -93,5 +101,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { addUsers, removeUser, deleteMessage } = userSlice.actions;
+export const { addUsers, removeUser, deleteMessage, addLoggedInId } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,7 +1,7 @@
 const { user_model } = require("../models");
 const { generateAuthToken, modified_response } = require("./utils");
 
-exports.waitUntilTimeoutCompletes = async(email,res,otp)=>{
+exports.waitUntilTimeoutCompletes = async(email,res,otp,expires)=>{
     const response= await new Promise((resolve, reject) => {
         setTimeout(async () => {
             const updated_user = await user_model.findOne({ email: email });

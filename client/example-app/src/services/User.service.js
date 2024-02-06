@@ -7,9 +7,8 @@ export const registerUser= (data)=>{
 export const loginUser = (data) => {
     return axios.post(`${api_url}/login`,data)
 }
-export const getSession = () =>{
-    
-    return axios.get(`${api_url}/sessions`)
+export const getSession = (id) =>{
+    return axios.get(`${api_url}/sessions/${id}`)
 }
 export const logoutUser = () =>{
     return axios.delete(`${api_url}/logout`);

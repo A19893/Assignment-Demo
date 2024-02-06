@@ -13,11 +13,11 @@ const App = () => {
     <SnackbarProvider>
       <Routes>
         {signed_state ? (
-          <Route path="/" element={<DashBoard socket={socket}/>} />
+          <Route  path="/" element={<DashBoard socket={socket}/>} />
         ) : (
           <>
-            <Route index path="/" element={<Signup />} />
-            <Route path="/login" element={<Login socket={socket}/>} />
+            <Route index path="/signup" element={<Signup />} />
+            <Route path="/" element={<Login socket={socket}/>} />
           </>
         )}
         <Route path="/*" element={<h1>Page not found</h1>} />

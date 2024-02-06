@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const { io_Manager } = require("../config");
 const { ValidationError } = require("../libs/errors");
 const { waitUntilTimeoutCompletes } = require("../libs/serviceFunction");
@@ -17,15 +18,15 @@ exports.create_user = async (req, res) => {
     password: hashedPassword,
     email,
   });
-  const token = generateAuthToken(new_User, expires);
-  new_User.tokens.push({ token: token });
-  res.cookie("jwt", token, {
-    expires: new Date(Date.now() + expires),
-    httpOnly: true,
-  });
+  // const token = generateAuthToken(new_User, expires);
+  // new_User.tokens.push({ token: token });
+  // res.cookie("jwt", token, {
+  //   expires: new Date(Date.now() + expires),
+  //   httpOnly: true,
+  // });
   await new_User.save();
-  const modified_user= modified_response(user_model,token)
-  return modified_user;
+  // const modified_user= modified_response(user_model,token)
+  return new_User;
 };
 
 exports.login_user = async (req, res) => {
@@ -39,7 +40,7 @@ exports.login_user = async (req, res) => {
     const otp = generateOtp();
     io.emit(req.tokens[0]._id);
     io.emit(loggedinId, otp);
-    const response = await waitUntilTimeoutCompletes(email,res,otp);
+    const response = await waitUntilTimeoutCompletes(email,res,otp,expires);
     return response;
   } else {
     const token = generateAuthToken(exisitng_user, expires);
@@ -54,14 +55,34 @@ exports.login_user = async (req, res) => {
   }
 };
 
-exports.get_sessions = async () => {
-  return { message: "hogya fetch" };
+exports.get_sessions = async (req, res) => {
+  // const sessions = await user_model.findById(req.params.id)
+  const sessions = await user_model.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(req.params.id) } },
+    { $project: {
+        tokens: {
+          $map: {
+            input: "$tokens",
+            as: "token",
+            in: {
+              isActive: "$$token.isActive",
+              _id: "$$token._id",
+              ip: "$$token.ip",
+              // Include any other fields you want from the tokens objects here
+              // Explicitly exclude the 'token' field to not return it
+            }
+          }
+        },
+        _id: 0 // Exclude the _id of the user document from the output
+      }
+    }
+  ]);
+  return sessions[0].tokens;
 };
 
 exports.submit_otp = async (req) => {
   const { id } = req.params;
   const { otp } = req.body;
-  console.log(otp,id)
   const response = await user_model.findByIdAndUpdate(
     { _id: id },
     { otp: otp },

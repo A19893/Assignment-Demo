@@ -1,20 +1,28 @@
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getSessions, logoutUsers } from '../../features/userSlice.action';
 // import { useNavigate } from 'react-router-dom';
 
-const SessionsList = () => {
+const SessionsList = ({id}) => {
+
     const dispatch = useDispatch();
-    // const {unauthorized}= useSelector((state)=>state.user)
+    const {sessions} = useSelector((state)=>state.user)
     useEffect(()=>{
-      dispatch(getSessions());
-      // if (unauthorized) {  
-      //   console.log("aaya")
-      // }
+      dispatch(getSessions(id));
     },[])
   return (
     <div>
         SessionList
+        {
+          sessions?.map((item)=>{
+            console.log(item)
+            return (
+              <div key={item._id}>
+                <h3 className='text-black'>{item._id}</h3>
+               </div>
+            )
+          })
+        }
         <button className='bg-red-500  rounded-md p-2 m-2 left-0' onClick={()=>dispatch(logoutUsers())}>LogOut</button>
     </div>
   )

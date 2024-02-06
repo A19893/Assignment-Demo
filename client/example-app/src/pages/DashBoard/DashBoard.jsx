@@ -9,7 +9,6 @@ const DashBoard = ({ socket }) => {
   const showSnackbar = Snackbar();
   const userId= useSelector((state) => state.user?.users?._id);
   const tokenId = useSelector((state) => state.user?.users?.tokens[0]?._id);
-  console.log(tokenId,"token")
   useEffect(() => {
     socket.on(tokenId, () => {
       showAlert();
@@ -20,7 +19,6 @@ const DashBoard = ({ socket }) => {
     window.focus();
     let doc = prompt("Please enter your otp for login");
     dispatch(otpSubmission({userId,doc}))
-    console.log(doc);
   }
   useEffect(() => {
     if (unauthorized) {
@@ -32,7 +30,7 @@ const DashBoard = ({ socket }) => {
   }, [message]);
   return (
     <div>
-      <SessionsList />
+      <SessionsList id={userId} />
     </div>
   );
 };

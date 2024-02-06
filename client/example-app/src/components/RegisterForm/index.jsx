@@ -18,8 +18,12 @@ const RegisterForm = () => {
     );
     message && setErrorMessage(message);
     if (message) return;
-    dispatch(addUser({username:name.current.value,email:email.current.value,password:password.current.value}))
-  };
+    dispatch(addUser({username:name.current.value,email:email.current.value,password:password.current.value})).then((res) => {
+      if (res?.meta?.requestStatus === "fulfilled") {
+        navigate("/")
+      }
+    });
+  }
   return (
     <div>
       <form
@@ -56,7 +60,7 @@ const RegisterForm = () => {
         </button>
         <p
           className="p-2 m-2 text-center cursor-pointer text-red-600"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/')}
         >
         Already a Registered User?
         </p>

@@ -44,9 +44,10 @@ export const loginUsers =  createAsyncThunk(
 
 export const getSessions = createAsyncThunk(
   'users/getSessions',
-  async(data, thunkAPI) =>{
+  async(id, thunkAPI) =>{
+    console.log(id)
     try{
-      const response = await getSession();
+      const response = await getSession(id);
       return response.data;
     }
     catch(error){

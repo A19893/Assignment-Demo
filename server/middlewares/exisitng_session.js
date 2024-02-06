@@ -9,7 +9,6 @@ exports.existing_session = async(req,res,next)=>{
         const activeToken= activeUser.tokens.filter((item)=>{
             const verifyUser = jwt.decode(item.token);
             if (verifyUser.exp > Math.floor(Date.now() / 1000) && item.isActive) {
-                console.log(verifyUser.exp)
               isActiveCount++;
               return item;
             }

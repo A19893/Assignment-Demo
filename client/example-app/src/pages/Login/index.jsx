@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react'
 import LoginForm from '../../components/LoginForm/LoginForm'
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteMessage } from '../../features/userSlice';
+import { addLoggedInId, deleteMessage } from '../../features/userSlice';
 import { Snackbar } from '../../components/SnackBar/SnackBar';
+import { generateShortUuid, showAlert } from '../../utils';
 const Login = ({socket}) => {
   const showSnackbar = Snackbar();
   const dispatch = useDispatch();
   const {message, type}= useSelector((state)=>state.user)
-  const loggedinId=123;
+  const loggedinId=generateShortUuid();
   useEffect(()=>{
+    dispatch(addLoggedInId(loggedinId));
     socket.on(loggedinId,(otp)=>{
       showAlert(otp);
     })
@@ -23,11 +25,6 @@ const Login = ({socket}) => {
       return;
     }
   },[message])
-
-  function showAlert(otp){
-    alert(`Your otp is ${otp}`);
-    // console.log(doc)
-  }
   return (
     <div>
         <LoginForm/>

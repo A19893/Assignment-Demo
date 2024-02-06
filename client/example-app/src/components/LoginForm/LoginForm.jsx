@@ -2,23 +2,24 @@ import React, { useRef, useState } from "react";
 import { checkValidaData } from "../../utils";
 import { useNavigate } from "react-router-dom";
 import { loginUsers } from "../../features/userSlice.action";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { CircularProgress } from "@mui/material"
 const LoginForm = () => {
+  const {loggedInId, isLoading}= useSelector((state)=> state.user)
   const dispatch=useDispatch();
   const email = useRef(null);
   const password = useRef(null);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate= useNavigate();
-  const handleButtonClick = () => {
+  const handleButtonClick =() => {
     // Validate the form Data
-    const message = checkValidaData(
+    const validateMessage = checkValidaData(
       email.current.value,
       password.current.value
     );
-    message && setErrorMessage(message);
-    if (message) return;
-    dispatch(loginUsers({email:email.current.value,password:password.current.value,loggedinId:123}))
-    navigate("/")
+    validateMessage && setErrorMessage(validateMessage);
+    if (validateMessage) return;
+    dispatch(loginUsers({email:email.current.value,password:password.current.value,loggedinId:loggedInId}))
   };
   return (
     <div>
@@ -46,13 +47,13 @@ const LoginForm = () => {
           onClick={handleButtonClick}
           className="py-4 my-4 bg-red-600 w-full rounded-md"
         >
-           Sign In
+          {isLoading?<CircularProgress size={30} />:"Sign In"}
         </button>
         <p
           className="p-2 m-2 text-center cursor-pointer text-red-600"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/signup')}
         >
-        Already a Registered User?
+        Not a Registered User?
         </p>
       </form>
     </div>
