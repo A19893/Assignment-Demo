@@ -2,9 +2,14 @@ const { default: mongoose } = require("mongoose");
 const { io_Manager } = require("../config");
 const { ValidationError } = require("../libs/errors");
 const { waitUntilTimeoutCompletes } = require("../libs/serviceFunction");
-const { generateAuthToken, generateOtp, modified_response } = require("../libs/utils");
+const {
+  generateAuthToken,
+  generateOtp,
+  modified_response,
+} = require("../libs/utils");
 const { user_model } = require("../models");
 const bcrypt = require("bcrypt");
+const users_model = require("../models/user_model");
 exports.create_user = async (req, res) => {
   const { username, password, email, expires = 60 * 60 * 1000 } = req.body;
   const existing_User = await user_model.findOne({ email: email });
@@ -40,7 +45,7 @@ exports.login_user = async (req, res) => {
     const otp = generateOtp();
     io.emit(req.tokens[0]._id);
     io.emit(loggedinId, otp);
-    const response = await waitUntilTimeoutCompletes(email,res,otp,expires);
+    const response = await waitUntilTimeoutCompletes(email, res, otp, expires);
     return response;
   } else {
     const token = generateAuthToken(exisitng_user, expires);
@@ -50,16 +55,29 @@ exports.login_user = async (req, res) => {
       expires: new Date(Date.now() + expires),
       httpOnly: true,
     });
-    const modified_user= await modified_response(user_model,token)
+    const modified_user = await modified_response(user_model, token);
     return modified_user;
   }
 };
 
 exports.get_sessions = async (req, res) => {
-  // const sessions = await user_model.findById(req.params.id)
+  const existing_token = req.token;
+  const expires = 60 * 60 * 1000;
+  const existing_user = await user_model.findById({ _id: req.params.id });
+  const token = generateAuthToken(existing_user, expires);
+  res.cookie("jwt", token, {
+    expires: new Date(Date.now() + expires),
+    httpOnly: true,
+  });
+  await user_model.findOneAndUpdate(
+    { _id: existing_user._id, "tokens.token": existing_token }, // Find the user by ID and the existing token
+    { $set: { "tokens.$.token": token } }, // Update the existing token with the new token
+    // { new: true } // Return the updated document
+  );
   const sessions = await user_model.aggregate([
     { $match: { _id: new mongoose.Types.ObjectId(req.params.id) } },
-    { $project: {
+    {
+      $project: {
         tokens: {
           $map: {
             input: "$tokens",
@@ -70,12 +88,12 @@ exports.get_sessions = async (req, res) => {
               ip: "$$token.ip",
               // Include any other fields you want from the tokens objects here
               // Explicitly exclude the 'token' field to not return it
-            }
-          }
+            },
+          },
         },
-        _id: 0 // Exclude the _id of the user document from the output
-      }
-    }
+        _id: 0, // Exclude the _id of the user document from the output
+      },
+    },
   ]);
   return sessions[0].tokens;
 };
