@@ -96,7 +96,8 @@ const userSlice = createSlice({
       })
       .addCase(getSessions.fulfilled,(state,action)=>{
         state.isLoading=false;
-        state.sessions=action.payload;
+        state.sessions=action.payload.sessions;
+        state.users = {...state.users, token : action.payload.token}
       })
   },
 });

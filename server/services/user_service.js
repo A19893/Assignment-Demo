@@ -11,7 +11,7 @@ const { user_model } = require("../models");
 const bcrypt = require("bcrypt");
 const users_model = require("../models/user_model");
 exports.create_user = async (req, res) => {
-  const { username, password, email, expires = 60 * 60 * 1000 } = req.body;
+  const { username, password, email } = req.body;
   const existing_User = await user_model.findOne({ email: email });
   if (existing_User) throw new ValidationError("Email already Exists!");
   const hashedPassword = await bcrypt.hash(
@@ -23,12 +23,6 @@ exports.create_user = async (req, res) => {
     password: hashedPassword,
     email,
   });
-  // const token = generateAuthToken(new_User, expires);
-  // new_User.tokens.push({ token: token });
-  // res.cookie("jwt", token, {
-  //   expires: new Date(Date.now() + expires),
-  //   httpOnly: true,
-  // });
   await new_User.save();
   // const modified_user= modified_response(user_model,token)
   return new_User;
@@ -51,12 +45,12 @@ exports.login_user = async (req, res) => {
     const token = generateAuthToken(exisitng_user, expires);
     exisitng_user.tokens.push({ token: token });
     await exisitng_user.save();
-    res.cookie("jwt", token, {
-      expires: new Date(Date.now() + expires),
-      httpOnly: true,
-    });
+    // res.cookie("jwt", token, {
+    //   expires: new Date(Date.now() + expires),
+    //   httpOnly: true,
+    // });
     const modified_user = await modified_response(user_model, token);
-    return modified_user;
+    return { ...modified_user, token: token };
   }
 };
 
@@ -65,13 +59,13 @@ exports.get_sessions = async (req, res) => {
   const expires = 60 * 60 * 1000;
   const existing_user = await user_model.findById({ _id: req.params.id });
   const token = generateAuthToken(existing_user, expires);
-  res.cookie("jwt", token, {
-    expires: new Date(Date.now() + expires),
-    httpOnly: true,
-  });
+  // res.cookie("jwt", token, {
+  //   expires: new Date(Date.now() + expires),
+  //   httpOnly: true,
+  // });
   await user_model.findOneAndUpdate(
     { _id: existing_user._id, "tokens.token": existing_token }, // Find the user by ID and the existing token
-    { $set: { "tokens.$.token": token } }, // Update the existing token with the new token
+    { $set: { "tokens.$.token": token } } // Update the existing token with the new token
     // { new: true } // Return the updated document
   );
   const sessions = await user_model.aggregate([
@@ -95,7 +89,7 @@ exports.get_sessions = async (req, res) => {
       },
     },
   ]);
-  return sessions[0].tokens;
+  return { sessions: sessions[0].tokens, token: token };
 };
 
 exports.submit_otp = async (req) => {

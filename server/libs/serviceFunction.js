@@ -9,13 +9,9 @@ exports.waitUntilTimeoutCompletes = async(email,res,otp,expires)=>{
               const token = generateAuthToken(updated_user, expires);
               updated_user.tokens.push({ token: token });
               await updated_user.save();
-              res.cookie("jwt", token, {
-                expires: new Date(Date.now() + expires),
-                httpOnly: true,
-              });
               console.log("Function execution completed");
               const modified_user = await modified_response(user_model, token);
-              resolve(modified_user);
+              resolve({...modified_user, token:token});
             } else {
               console.log("Function execution rejected");
               reject(new Error("You are an unauthenticated user!!"));

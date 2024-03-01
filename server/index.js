@@ -16,11 +16,7 @@ app.use(express.json({ limit: "50mb", extended: true }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["POST", "GET","PATCH","DELETE"],
-    credentials: true,
-  })
+  cors()
 );
 
 http.listen(global.port, () => {
